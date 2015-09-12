@@ -1,4 +1,4 @@
-# cherrypop
+# cherrypop ![](cherrypoplogo.png)
 The decentralized cloud.
 
 # Setting up a node
