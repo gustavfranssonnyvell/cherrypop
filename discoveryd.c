@@ -13,7 +13,9 @@
 #define msg "IHAVE"
 #define STATE_FILE "/var/lib/discoveryd/servers"
 #define MYSERVICES_FILE "/etc/discoveryd/myservices"
+#define SCRIPTS_PATH "/etc/discoveryd/discovery.d/"
 #define LIFE 2
+#define GIVEUP 60
 
 #ifndef TRUE
 #define TRUE 1
@@ -73,7 +75,7 @@ char **getservices() {
 	return services;
 }
 
-struct libvirtentry **parse() {
+struct libvirtentry **parse(struct libvirtentry **stale, struct libvirtentry **giveup) {
 	FILE *fp = fopen(STATE_FILE, "r");
 	if (fp) {
 		char buf[1024];
@@ -91,6 +93,7 @@ struct libvirtentry **parse() {
 				char host[512], addedat[512], service[512];
 				strcpy(host, "");
 				strcpy(addedat, "");
+				strcpy(service, "");
 				int hostdone=0;
 				int addedatdone=0;
 				size_t j=0,u=0;
@@ -118,14 +121,23 @@ struct libvirtentry **parse() {
 						}
 					}
 				}
-				if (strcmp(host, "") && atoi(addedat)+LIFE >= time(NULL)) { // Exclude stale entries
+				if (strcmp(host, "")) {
 					struct libvirtentry *newentry = (struct libvirtentry*)malloc(sizeof(struct libvirtentry));
 					memset(newentry, 0, sizeof(struct libvirtentry));
 					newentry->service = strdup(service);
 					newentry->host = strdup(host);
 					newentry->addedat = atoi(addedat);
-					virts[virtindex++] = newentry;
-					virts[virtindex] = NULL;
+					if (atoi(addedat)+LIFE >= time(NULL)) { // Exclude stale entries
+						virts[virtindex++] = newentry;
+						virts[virtindex] = NULL;
+					} else {
+						if (atoi(addedat)+GIVEUP < time(NULL)) {
+							*(giveup++) = newentry;
+							*giveup = NULL;
+						}
+						*(stale++) = newentry;
+						*stale = NULL;
+					}
 				}
 			} else {
 				line[k++]=buf[i];
@@ -142,41 +154,106 @@ void dealloclibvirtentry(struct libvirtentry *entry) {
 	free(entry->host);
 	free(entry);
 }
-void dealloclibvirtentryarray(struct libvirtentry **entries, struct libvirtentry *keep) {
+void dealloclibvirtentryarray(struct libvirtentry **entries, struct libvirtentry *keep, int keepentries) {
 	struct libvirtentry **start = entries;
-	while(*entries != NULL) {
-		if (*entries != keep)
-			dealloclibvirtentry(*entries);
-		entries++;
+	if (!keepentries) {
+		while(*entries != NULL) {
+			if (*entries != keep)
+				dealloclibvirtentry(*entries);
+			entries++;
+		}
 	}
 	free(start);
 }
+struct libvirtentry **newentries() {
+	struct libvirtentry **new = (struct libvirtentry**)malloc(sizeof(struct libvirtentry *)*1024);
+	memset(new, 0, sizeof(struct libvirtentry *)*1024);
+	*new = NULL;
+	return new;
+}
 
-struct libvirtentry *findlibvirtserver(char *host, char *service) {
-	struct libvirtentry **all = parse();
+struct libvirtentry **excludeinnew(struct libvirtentry **array, struct libvirtentry *b) {
+	struct libvirtentry **new = newentries();
+	struct libvirtentry **start = new;
+	struct libvirtentry **ptr = array;
+	while (*ptr != NULL) {
+		if (b != *ptr) {
+			*(new++) = *ptr;
+			*new = NULL;
+		}
+		ptr++;
+	}
+	return start;
+}
+
+struct libvirtentry **combine(struct libvirtentry **a, struct libvirtentry **b) {
+	struct libvirtentry **new = newentries();
+	struct libvirtentry **start = new;
+	while(*a != NULL) {
+		*(new++) = *(a++);
+		*new = NULL;
+	}
+	while(*b != NULL) {
+		*(new++) = *(b++);
+		*new = NULL;
+	}
+	return start;
+}
+
+struct libvirtentry *findlibvirtserver(char *host, char *service, int *is_stale, struct libvirtentry ***current, struct libvirtentry ***staleout, struct libvirtentry **stale_entry, struct libvirtentry ***giveupout) {
+	struct libvirtentry **stale = newentries();
+	struct libvirtentry **stale_start = stale;
+	struct libvirtentry **giveup = newentries();
+	struct libvirtentry **all = parse(stale, giveup);
+	*giveupout = giveup;
+	*staleout = stale;
+	*current = all;
+	while (*stale != NULL) {
+		struct libvirtentry *entry = *stale;
+		if (!strcmp(entry->host, host) && !strcmp(entry->service, service)) {
+			*is_stale = 1;
+			*stale_entry = entry;
+			break;
+		}
+		stale++;
+	}
 	struct libvirtentry **start = all;
 	if (all == NULL) return NULL;
 	while (*all != NULL) {
 		struct libvirtentry *entry = *all;
 		if (!strcmp(entry->host, host) && !strcmp(entry->service, service)) {
-			dealloclibvirtentryarray(start, entry);
 			return entry;
 		}
 		all++;
 	}
-	dealloclibvirtentryarray(start, NULL);
 	return NULL;
 }
 
+size_t count(struct libvirtentry **entries) {
+	size_t r=0;
+	while (*entries != NULL) r++, entries++;
+	return r;
+}
 
-void addlibvirtserver(struct libvirtentry *newentry) {
-	struct libvirtentry **all = parse();
-	struct libvirtentry **start = all;
+
+void addlibvirtserver(struct libvirtentry **entries, struct libvirtentry *newentry) {
+	struct libvirtentry **all = entries;
+	struct libvirtentry **cleanptr;
 	FILE *fp = fopen(STATE_FILE, "w");
 	if (fp) {
 		if (all) {
-			while (*all != NULL) {
-				fprintf(fp, "%s %ld %s\n", (*all)->host, (long)((*all)->addedat), (*all)->service);
+			while (*all != NULL) {/*
+				cleanptr = cleanthesestale;
+				int next = 0;
+				while (*cleanptr != NULL) {
+					if (*all == *cleanptr) {
+						next = 1;
+						break;
+					}
+					cleanptr++;
+				}
+				if (!next)*/
+					fprintf(fp, "%s %ld %s\n", (*all)->host, (long)((*all)->addedat), (*all)->service);
 				all++;
 			}
 		}
@@ -184,7 +261,6 @@ void addlibvirtserver(struct libvirtentry *newentry) {
 		fsync(fileno(fp));
 		fclose(fp);
 	}
-	dealloclibvirtentryarray(start, NULL);
 }
 
 int  
@@ -356,6 +432,7 @@ main(int argc,char **argv) {
 	}
 
 	for (;;) {  
+		memset(dgram, 0, sizeof(dgram));
 		/* 
 		 * Wait for a broadcast message: 
 		 */  
@@ -366,21 +443,60 @@ main(int argc,char **argv) {
 				(struct sockaddr *)&adr, /* Addr */  
 				&x);    /* Addr len, in & out */  
 
-		if ( z < 0 )  
+		if ( z < 0 )  {
 			displayError("recvfrom(2)", 0); /* else err */  
+			continue;
+		}
 		dgram[z] = '\0';
 
 		if (!strncmp(dgram, msg, strlen(msg))) {
 			char *remote = inet_ntoa(adr.sin_addr);
+			if (!strncmp(remote, bc_addr, strlen(remote))) continue; // We don't know who this is.
 			char *service = dgram+strlen(msg)+1;
-			struct libvirtentry *entry = findlibvirtserver(remote, service);
-			if (entry == NULL) {
+			int is_stale = 0;
+			struct libvirtentry **all;
+			struct libvirtentry **stale;
+			struct libvirtentry *stale_entry=NULL;
+			struct libvirtentry **giveups;
+			struct libvirtentry *entry = findlibvirtserver(remote, service, &is_stale, &all, &stale, &stale_entry, &giveups);
+			struct libvirtentry **work=stale;
+			struct libvirtentry **giveupsptr=giveups;
+			while(*giveupsptr != NULL) {
+				struct libvirtentry **worknew = excludeinnew(work, *giveupsptr);
+				dealloclibvirtentry(*giveupsptr);
+				dealloclibvirtentryarray(work, NULL, 1);
+				work = worknew;
+				giveupsptr++;
+			}
+			stale = work;
+			
+			if (entry == NULL && is_stale) {
 				struct libvirtentry newentry;
 				newentry.host = remote;
 				newentry.addedat = time(NULL);
 				newentry.service = service;
-				addlibvirtserver(&newentry);
+				struct libvirtentry **stalewithnonstale = combine(stale, all);
+				struct libvirtentry **stalewithnonstalewithoutfound = stalewithnonstale;
+				stalewithnonstalewithoutfound = excludeinnew(stalewithnonstale, stale_entry);
+				addlibvirtserver(stalewithnonstalewithoutfound, &newentry);
+				if (stalewithnonstale != stalewithnonstalewithoutfound)
+					dealloclibvirtentryarray(stalewithnonstalewithoutfound, NULL, 1);
+				dealloclibvirtentryarray(stalewithnonstale, NULL, 1);
+			} else if (entry == NULL) {
+				struct libvirtentry newentry;
+				newentry.host = remote;
+				newentry.addedat = time(NULL);
+				newentry.service = service;
+				struct libvirtentry **stalewithnonstale = combine(stale, all);
+				addlibvirtserver(stalewithnonstale, &newentry);
+				char command[1024];
+				sprintf(command, "for i in `ls %s`; do %s$i %s %s; done", SCRIPTS_PATH, SCRIPTS_PATH, newentry.host, newentry.service);
+				system(command);
+				dealloclibvirtentryarray(stalewithnonstale, NULL, 1);
 			}
+			dealloclibvirtentryarray(giveups, NULL, 1);
+			dealloclibvirtentryarray(all, NULL, 0);
+			dealloclibvirtentryarray(stale, NULL, 0);
 		}
 	}  
 
