@@ -1,4 +1,5 @@
 # cherrypop
+The decentralized cloud.
 
 # Setting up a node
 1. Install Ubuntu 14.04 LTS.
