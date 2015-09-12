@@ -10,7 +10,7 @@ The decentralized cloud.
 6. Copy ssh keys to the new node. $ ssh-copy-id newhost
 7. Setup discoveryd.
 8. Add distributevms to crontab. Say every 5 seconds.
-9. TODO
+9. TODO: add a daemon that determines if (for example, if localhost has the most resources, or some other election system which guarantees only one node is elected) and then boots up a copied vm.
 
 # Setup of discoveryd
 Mkdir /etc/discoveryd. Edit /etc/discoveryd/myservices and add what localhost has. One service per line. Service is a string with whatever you like.
