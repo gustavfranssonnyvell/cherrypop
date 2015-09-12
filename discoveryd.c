@@ -156,7 +156,6 @@ struct libvirtentry *findlibvirtserver(char *host, char *service) {
 	struct libvirtentry **all = parse();
 	struct libvirtentry **start = all;
 	if (all == NULL) return NULL;
-	fflush(stdout);
 	while (*all != NULL) {
 		struct libvirtentry *entry = *all;
 		if (!strcmp(entry->host, host) && !strcmp(entry->service, service)) {
@@ -383,7 +382,6 @@ main(int argc,char **argv) {
 				addlibvirtserver(&newentry);
 			}
 		}
-		fflush(stdout);  
 	}  
 
 	return 0;  
