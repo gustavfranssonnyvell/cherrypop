@@ -65,6 +65,7 @@ void main() {
 	*dests = NULL;
 	char **hosts = gethosts();
 	while(*hosts != NULL) {
+		printf("Adding vmhost %s\n", *hosts);
 		char URL[512];
 		sprintf(URL, "qemu+ssh://%s/system", *hosts);
 		virConnectPtr dest = virConnectOpen(URL);
@@ -73,13 +74,14 @@ void main() {
 		hosts++;
 	}
 	virDomainPtr *domains;
-	virConnectListAllDomains(src, &domains, VIR_CONNECT_LIST_DOMAINS_ACTIVE);
+	virConnectListAllDomains(src, &domains, VIR_CONNECT_LIST_DOMAINS_ACTIVE|VIR_CONNECT_LIST_DOMAINS_INACTIVE|VIR_CONNECT_LIST_DOMAINS_RUNNING|VIR_CONNECT_LIST_DOMAINS_SHUTOFF|VIR_CONNECT_LIST_DOMAINS_PERSISTENT|VIR_CONNECT_LIST_DOMAINS_OTHER|VIR_CONNECT_LIST_DOMAINS_TRANSIENT|VIR_CONNECT_LIST_DOMAINS_PAUSED);
 	while(*domains != NULL) {
 		char *config = virDomainGetXMLDesc(*domains, 0);
 		char uuid[VIR_UUID_BUFLEN];
 		char uuidstr[VIR_UUID_STRING_BUFLEN];
 		virDomainGetUUIDString(*domains, uuidstr);
 		virDomainGetUUID(*domains, uuid);
+		printf("Domain: %s\n", uuidstr);
 		destsptr = dests;
 		while (*destsptr != NULL) {
 			virConnectPtr dest = *destsptr;
