@@ -147,13 +147,17 @@ void main(int argc, char *argv[]) {
 	while(*domainsptr != NULL) {
 		char buf[VIR_UUID_STRING_BUFLEN];
 		virDomainGetUUIDString(*domainsptr, buf);
+		char *name = virDomainGetName(*domainsptr);
+		if (!strncmp("ignore",name,strlen("ignore"))) {
+			domainsptr++;
+			continue;
+		}
 		printf("%s\n", buf);
 		*(domainuuidsptr++) = strdup(buf);
 		*domainuuidsptr = NULL;
 		domainsptr++;
 	}
 	domainuuidsptr = domainuuids;
-	printf("\n");
 	size_t domainuuids_count=0;
 	while(*domainuuidsptr != NULL) domainuuidsptr++, domainuuids_count++;
 	domainuuidsptr = domainuuids;
@@ -245,8 +249,14 @@ void main(int argc, char *argv[]) {
 	struct hostwithvmhash **cleaned = cleanlist(csptr);
 
 	while(*cleaned != NULL) {
+		virDomainPtr d = virDomainLookupByUUIDString(localhost, (*cleaned)->vm);
+		char *name = virDomainGetName(d);
 		if (!strcmp((*cleaned)->host, myIP)) {
-			printf("I should be running %s\n", (*cleaned)->vm);
+			printf("I should be running %s (%s)\n", name, (*cleaned)->vm);
+			virDomainCreate(d);
+		} else {
+			printf("I should NOT be running %s (%s)\n", name, (*cleaned)->vm);
+			virDomainShutdown(d);
 		}
 		//printf("prio:%d host:%s, vm:%s combined:%s\n", (*cleaned)->prio, (*cleaned)->host, (*cleaned)->vm, (*cleaned)->combined);
 		cleaned++;
