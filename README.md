@@ -9,8 +9,9 @@ The decentralized cloud.
 5. Link /store/images to /var/lib/libvirt/images. ln -s /store/images /var/lib/libvirt/images
 6. Copy ssh keys to the new node. $ ssh-copy-id newhost
 7. Setup discoveryd.
-8. Add distributevms to crontab. Say every 5 seconds.
-9. TODO: add a daemon that determines if (for example, if localhost has the most resources, or some other election system which guarantees only one node is elected) and then boots up a copied vm.
+8. Copy init.d/cherrypop to /etc/init.d. Customize it for where you put discoveryd and the rest.
+9. Run sudo service cherrypop start
+10. Done.
 
 # Setup of discoveryd
 Mkdir /etc/discoveryd. Edit /etc/discoveryd/myservices and add what localhost has. One service per line. Service is a string with whatever you like.
