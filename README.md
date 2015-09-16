@@ -5,7 +5,7 @@ The decentralized cloud.
 1. Install Ubuntu 14.04 LTS.
 2. Edit /etc/network/interfaces to contain:
 auto eth0
-iface eth0 inet dhcp
+iface eth0 inet manual
 
 auto br-eth0
 iface br-eth0 inet dhcp
