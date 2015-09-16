@@ -3,6 +3,7 @@ The decentralized cloud.
 
 # Setting up a node
 1. Install Ubuntu 14.04 LTS.
+2. Preferably add a new user such as cherrypop where you run and do the rest.
 2. Edit /etc/network/interfaces to contain: (exclude the ```)
 ```
 auto eth0
