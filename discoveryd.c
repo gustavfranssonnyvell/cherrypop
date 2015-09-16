@@ -35,7 +35,7 @@
 #define MYSERVICES_FILE "/etc/discoveryd/myservices"
 #define SCRIPTS_PATH "/etc/discoveryd/discovery.d/"
 #define LIFE 2
-#define GIVEUP 60
+#define GIVEUP 3
 
 #ifndef TRUE
 #define TRUE 1
