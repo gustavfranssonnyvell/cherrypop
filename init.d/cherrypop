@@ -1,0 +1,20 @@
+#!/bin/sh
+if [ "$1" = "" ]; then
+	echo "Usage: cherrypop [start|stop]"
+	exit
+fi
+
+if [ "$1" = "start" ]; then
+	echo starting cherrypop
+	sudo -u gustav /home/gustav/discoveryd 192.168.1.68 192.168.1.255:2500 && sudo -u gustav /home/gustav/runner.sh 192.168.1.68
+fi
+if [ "$1" = "stop" ]; then
+	echo stopping cherrypop
+	killall discoveryd
+	killall runner.sh
+fi
+if [ "$1" = "restart" ]; then
+	$0 stop
+	$0 start
+fi
+
