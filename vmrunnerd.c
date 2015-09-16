@@ -136,6 +136,10 @@ void main(int argc, char *argv[]) {
 		printf("arg1=myip\n"),exit(-128);
 	myIP = argv[1];
 
+	run(myIP);
+}
+
+void run(char *myIP) {
 	virConnectPtr localhost = virConnectOpen("qemu:///system");
 	virDomainPtr *domains, *domainsptr;
 	virConnectListAllDomains(localhost, &domains, VIR_CONNECT_LIST_DOMAINS_ACTIVE|VIR_CONNECT_LIST_DOMAINS_INACTIVE|VIR_CONNECT_LIST_DOMAINS_RUNNING|VIR_CONNECT_LIST_DOMAINS_SHUTOFF);
@@ -256,7 +260,7 @@ void main(int argc, char *argv[]) {
 			virDomainCreate(d);
 		} else {
 			printf("I should NOT be running %s (%s)\n", name, (*cleaned)->vm);
-			virDomainShutdown(d);
+			virDomainDestroy(d);
 		}
 		//printf("prio:%d host:%s, vm:%s combined:%s\n", (*cleaned)->prio, (*cleaned)->host, (*cleaned)->vm, (*cleaned)->combined);
 		cleaned++;
