@@ -3,7 +3,8 @@ The decentralized cloud.
 
 # Setting up a node
 1. Install Ubuntu 14.04 LTS.
-2. Edit /etc/network/interfaces to contain:
+2. Edit /etc/network/interfaces to contain: (exclude the ```)
+```
 auto eth0
 iface eth0 inet manual
 
@@ -13,7 +14,7 @@ iface br-eth0 inet dhcp
     bridge_fd 5
     bridge_stp off
     bridge_maxwait 1
-
+```
 3. Install lizardfs-client. See http://www.lizardfs.com
 4. Mount a lizardfs system on /store. Mkdir /store/images.
 5. Install libvirt-bin and qemu-system-x86. $ sudo apt-get install libvirt-bin qemu-system-x86
