@@ -1,12 +1,15 @@
 #!/bin/sh
+IF=br-eth0
+MYIP=`ip addr show $IF|grep "inet "|cut -d" " -f6|cut -d"/" -f1`
+BROADCAST=`ip addr show $IF|grep "inet "|cut -d" " -f8`
 if [ "$1" = "" ]; then
-	echo "Usage: cherrypop [start|stop]"
+	echo "Usage: cherrypop [start|stop|restart]"
 	exit
 fi
 
 if [ "$1" = "start" ]; then
 	echo starting cherrypop
-	sudo -u gustav /home/gustav/discoveryd 192.168.1.68 192.168.1.255:2500 && sudo -u gustav /home/gustav/runner.sh 192.168.1.68
+	sudo -u gustav /home/gustav/discoveryd $MYIP $BROADCAST:2500 && sudo -u gustav /home/gustav/runner.sh $MYIP
 fi
 if [ "$1" = "stop" ]; then
 	echo stopping cherrypop
