@@ -18,7 +18,7 @@ iface br-eth0 inet dhcp
 3. Install lizardfs-client. See http://www.lizardfs.com
 4. Mount a lizardfs system on /store. Mkdir /store/images.
 5. Install libvirt-bin and qemu-system-x86. $ sudo apt-get install libvirt-bin qemu-system-x86
-6. Link /store/images to /var/lib/libvirt/images. ln -s /store/images /var/lib/libvirt/images
+6. Link /store/images to /var/lib/libvirt/images. # ln -s /store/images /var/lib/libvirt/images
 7. Copy ssh keys to the new node. $ ssh-copy-id newhost
 8. Setup discoveryd.
 9. Copy init.d/cherrypop to /etc/init.d. Customize it for where you put discoveryd and the rest.
