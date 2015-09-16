@@ -97,7 +97,7 @@ void main() {
 	virDomainPtr *domains;
 	virConnectListAllDomains(src, &domains, VIR_CONNECT_LIST_DOMAINS_ACTIVE|VIR_CONNECT_LIST_DOMAINS_INACTIVE|VIR_CONNECT_LIST_DOMAINS_RUNNING|VIR_CONNECT_LIST_DOMAINS_SHUTOFF|VIR_CONNECT_LIST_DOMAINS_PERSISTENT|VIR_CONNECT_LIST_DOMAINS_OTHER|VIR_CONNECT_LIST_DOMAINS_TRANSIENT|VIR_CONNECT_LIST_DOMAINS_PAUSED);
 	while(*domains != NULL) {
-		char *config = virDomainGetXMLDesc(*domains, VIR_DOMAIN_XML_MIGRATABLE);
+		char *config = virDomainGetXMLDesc(*domains, 0);
 		char uuid[VIR_UUID_BUFLEN];
 		char uuidstr[VIR_UUID_STRING_BUFLEN];
 		virDomainGetUUIDString(*domains, uuidstr);
