@@ -1,4 +1,5 @@
 #!/bin/sh
+CHERRYUSER=cherrypop
 IF=br-eth0
 MYIP=`ip addr show $IF|grep "inet "|cut -d" " -f6|cut -d"/" -f1`
 BROADCAST=`ip addr show $IF|grep "inet "|cut -d" " -f8`
@@ -9,7 +10,7 @@ fi
 
 if [ "$1" = "start" ]; then
 	echo starting cherrypop
-	sudo -u gustav /home/gustav/discoveryd $MYIP $BROADCAST:2500 && sudo -u gustav /home/gustav/runner.sh $MYIP
+	sudo -u cherrypop /home/cherrypop/discoveryd $MYIP $BROADCAST:2500 && sudo -u cherrypop /home/cherrypop/runner.sh $MYIP
 fi
 if [ "$1" = "stop" ]; then
 	echo stopping cherrypop

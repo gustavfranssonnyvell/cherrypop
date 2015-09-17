@@ -7,8 +7,8 @@ fi
 
 a() {
 	while /bin/true; do
-		sudo -u gustav ./vmrunnerd $ME >/dev/null 2>/dev/null
-		sudo -u gustav ./distributevms $ME >/dev/null 2>/dev/null
+		sudo -u cherrypop /home/cherrypop/vmrunnerd $ME >/dev/null 2>/dev/null
+		sudo -u cherrypop /home/cherrypop/distributevms $ME >/dev/null 2>/dev/null
 		sleep 1
 	done
 }
