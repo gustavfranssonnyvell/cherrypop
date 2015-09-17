@@ -1,0 +1,18 @@
+#!/bin/bash
+adduser --system cherrypop
+usermod -a -G libvirtd cherrypop
+chown -R cherrypop:adm /var/lib/discoveryd
+grep -v "StrictHostKeyChecking no" ~cherrypop/.ssh/config>~cherrypop/.ssh/config
+echo StrictHostKeyChecking no>>~cherrypop/.ssh/config
+read -p"Your global Cherrypop password: " -s p
+echo alias ssh=\'sshpass -p\\\\\'$p\\\\\' ssh\'>>~cherrypop/.bashrc
+rm ~cherrypop/.ssh/id_rsa{,.pub}
+rm ~cherrypop/.ssh/authorized_keys
+echo $p>/etc/cherrypop/password
+chmod 600 /etc/cherrypop/password
+sudo -u cherrypop ssh-keygen -t rsa -b 4096 -N "" -f ~cherrypop/.ssh/id_rsa
+chown -R cherrypop:adm /etc/cherrypop
+chmod 700 /etc/cherrypop
+chsh -s/bin/bash cherrypop
+echo cherrypop:$p|chpasswd
+service cherrypop start

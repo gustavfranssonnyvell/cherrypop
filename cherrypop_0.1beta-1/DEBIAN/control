@@ -1,0 +1,12 @@
+Package: cherrypop
+Version: 0.1beta-1
+Section: base
+Priority: optional
+Architecture: amd64
+Recommends: qemu-kvm (>= 2.0.0)
+Depends: libvirt-bin (>= 1.2.2), lizardfs-client (>= 2.6.0), qemu-system-x86 (>= 2.0.0), sshpass (>= 1.05)
+Maintainer: Gustav Fransson Nyvell <gustav@nyvell.net>
+Description: Cherrypop
+ The decentralized cloud.
+ .
+ For a hosting node.
