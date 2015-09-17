@@ -21,8 +21,8 @@ iface br-eth0 inet dhcp
 5. Install lizardfs-client. See http://www.lizardfs.com
 6. Mount a lizardfs system on /store.
 $ sudo mkdir /store/images
-7. Install libvirt-bin and qemu-system-x86.
-$ sudo apt-get install libvirt-bin qemu-system-x86
+7. Install qemu-system-x86.
+$ sudo apt-get install qemu-system-x86
 8. Edit /etc/libvirt/libvirtd.conf and change unix_sock_rw_perms to 0777.
 9. Link /store/images to /var/lib/libvirt/images.
 $ sudo ln -s /store/images /var/lib/libvirt/images
