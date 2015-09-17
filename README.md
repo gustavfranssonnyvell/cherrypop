@@ -5,6 +5,24 @@ A cloud software with no masters or central points. Nodes autodetect other nodes
 and autodivide up the workload. Also there is no minimum limit for hosts, well, one might be nice. It's perfect for
 setting up low-end servers in a cloud or a cloud where you want the most bang for the bucks.
 
+# Installing a node using deb
+- Install Ubuntu 14.04 LTS. Update & upgrade & dist-upgrade it after installation is done.
+- Install LizardFS and configure a mount. Mkdir /var/lib/libvirt. Link in images e.g.: ln -s /YOURLFSMOUNT/images /var/lib/libvirt/images
+- Edit /etc/network/interfaces to contain: (exclude the ```)
+```
+auto eth0
+iface eth0 inet manual
+
+auto br-eth0
+iface br-eth0 inet dhcp
+    bridge_ports eth0
+    bridge_fd 5
+    bridge_stp off
+    bridge_maxwait 1
+```
+- Install deb with dpkg -i cherrypop*deb.
+- Done.
+
 # Setting up a node
 Nice to have: a DNS server and a DHCP server where you can lock in IP addresses for new virtual machines and nodes, also good for LizardFS mfsmaster.
 
