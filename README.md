@@ -1,7 +1,5 @@
 # cherrypop ![](cherrypoplogo.png)
 The decentralized cloud.
-# Author
-Gustav Fransson Nyvell
 # Description
 A cloud software with no masters or central points. Nodes autodetect other nodes and autodistribute virtual machines
 and autodivide up the workload. Also there is no minimum limit for hosts, well, one might be nice. It's perfect for
@@ -45,3 +43,6 @@ sudo service cherrypop start
 # Setup of discoveryd
 Mkdir /etc/discoveryd. Edit /etc/discoveryd/myservices and add what localhost has. One service per line. Service is a string with whatever you like.
 Create /var/lib/discoveryd and chown it to the owner of the discoveryd process. mkdir /etc/discoveryd/discovery.d/ and add scripts that will be executed when a new service is found. Scripts take two arguments, first host, second service. Done.
+
+# Author
+Gustav Fransson Nyvell
