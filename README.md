@@ -8,11 +8,15 @@ setting up low-end servers in a cloud or a cloud where you want the most bang fo
 # Setting up a node
 Nice to have: a DNS server and a DHCP server where you can lock in IP addresses for new virtual machines and nodes, also good for LizardFS mfsmaster.
 
-1. Install Ubuntu 14.04 LTS.
-2. Preferably add a new user such as cherrypop where you run and do the rest.
-3. Install libvirt-bin.
+Steps to install:
+
+- Install Ubuntu 14.04 LTS.
+
+- Preferably add a new user such as cherrypop where you run and do the rest.
+
+- Install libvirt-bin.
 $ sudo apt-get install libvirt-bin
-4. Edit /etc/network/interfaces to contain: (exclude the ```)
+- Edit /etc/network/interfaces to contain: (exclude the ```)
 ```
 auto eth0
 iface eth0 inet manual
@@ -24,21 +28,30 @@ iface br-eth0 inet dhcp
     bridge_stp off
     bridge_maxwait 1
 ```
-5. Install lizardfs-client. See http://www.lizardfs.com
-6. Mount a lizardfs system on /store.
+- Install lizardfs-client. See http://www.lizardfs.com
+
+- Mount a lizardfs system on /store.
 $ sudo mkdir /store/images
-7. Install qemu-system-x86.
+
+- Install qemu-system-x86.
 $ sudo apt-get install qemu-system-x86
-8. Edit /etc/libvirt/libvirtd.conf and change unix_sock_rw_perms to 0777.
-9. Link /store/images to /var/lib/libvirt/images.
+
+- Edit /etc/libvirt/libvirtd.conf and change unix_sock_rw_perms to 0777.
+
+- Link /store/images to /var/lib/libvirt/images.
 $ sudo ln -s /store/images /var/lib/libvirt/images
-8. Copy ssh keys to the new node.
+
+- Copy ssh keys to the new node.
 $ ssh-copy-id newhost
-10. Setup discoveryd.
-11. Copy init.d/cherrypop to /etc/init.d. Customize it for where you put discoveryd and the rest.
-12. Run
+
+- Setup discoveryd.
+
+- Copy init.d/cherrypop to /etc/init.d. Customize it for where you put discoveryd and the rest.
+
+- Run
 sudo service cherrypop start
-13. Done.
+
+- Done.
 
 # Setup of discoveryd
 Mkdir /etc/discoveryd. Edit /etc/discoveryd/myservices and add what localhost has. One service per line. Service is a string with whatever you like.
