@@ -15,4 +15,5 @@ chown -R cherrypop:adm /etc/cherrypop
 chmod 700 /etc/cherrypop
 chsh -s/bin/bash cherrypop
 echo cherrypop:$p|chpasswd
+ln -s /etc/init.d/cherrypop /etc/rc2.d/S99cherrypop
 service cherrypop start
