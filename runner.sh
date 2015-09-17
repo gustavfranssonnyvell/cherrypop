@@ -7,8 +7,14 @@ fi
 
 a() {
 	while /bin/true; do
-		sudo -u cherrypop /home/cherrypop/vmrunnerd $ME >/dev/null 2>/dev/null
-		sudo -u cherrypop /home/cherrypop/distributevms $ME >/dev/null 2>/dev/null
+		b() {
+		for i in `cat /var/lib/discoveryd/servers|cut -f1 -d" "`; do
+			SSHPASS=`cat /etc/cherrypop/password` sshpass -e ssh-copy-id $i >/dev/null 2>/dev/null;
+		done
+		}
+		b &
+		/usr/sbin/vmrunnerd $ME >/dev/null 2>/dev/null
+		/usr/sbin/distributevms $ME >/dev/null 2>/dev/null
 		sleep 1
 	done
 }
