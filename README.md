@@ -21,6 +21,8 @@ iface br-eth0 inet dhcp
     bridge_maxwait 1
 ```
 - Install deb with dpkg -i cherrypop*deb.
+- If it didn't install you need to install the dependencies.
+sudo apt-get upgrade -f
 - Done.
 
 # Setting up a Cherrypop node
