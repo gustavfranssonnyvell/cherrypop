@@ -3,6 +3,7 @@ adduser --system cherrypop
 usermod -a -G libvirtd cherrypop
 chown -R cherrypop:adm /var/lib/discoveryd
 grep -v "StrictHostKeyChecking no" ~cherrypop/.ssh/config>~cherrypop/.ssh/config
+mkdir ~cherrypop/.ssh
 echo StrictHostKeyChecking no>>~cherrypop/.ssh/config
 read -p"Your global Cherrypop password: " -s p
 echo alias ssh=\'sshpass -p\\\\\'$p\\\\\' ssh\'>>~cherrypop/.bashrc
