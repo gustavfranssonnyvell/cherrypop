@@ -18,4 +18,4 @@
 #   along with cherrypop.  If not, see <http://www.gnu.org/licenses/>.
 gcc distributevms.c `pkg-config libvirt --libs` -o distributevms
 gcc discoveryd.c mkaddr.c -o discoveryd
-gcc -g vmrunnerd.c -lcrypt `pkg-config libvirt --libs` -o vmrunnerd
+gcc vmrunnerd.c -lcrypt `pkg-config libvirt --libs` -o vmrunnerd
