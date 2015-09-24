@@ -8,7 +8,7 @@ setting up low-end servers in a cloud or a cloud where you want the most bang fo
 # Usage
 This section be filled in more later. To deploy a vm, have a disk image ready and create a machine on one of the nodes from it. When you press OK/done in virt-manager for instance, it will be distributed immediately. It is not recommended to install new VMs on the cloud as if the cloud changes then the VM might be moved and the installation broken. So have an image ready beforehand. Any VM with the prefix ignoreXXX (XXX=name) will not be managed by Cherrypop other than copied to other nodes.
 
-# Installing a Cherrypop node using deb
+# Installing a Cherrypop node using deb*
 - Install Ubuntu 14.04 LTS. Update & upgrade & dist-upgrade it after installation is done.
 - Install LizardFS and configure a mount. Mkdir /var/lib/libvirt. Link in images e.g.: ln -s /YOURLFSMOUNT/images /var/lib/libvirt/images
 - Edit /etc/network/interfaces to contain: (exclude the ```)
@@ -28,7 +28,7 @@ iface br-eth0 inet dhcp
 sudo apt-get upgrade -f
 - Done.
 
-# Setting up a Cherrypop node
+# Setting up a Cherrypop node*
 Nice to have: a DNS server and a DHCP server where you can lock in IP addresses for new virtual machines and nodes, also good for LizardFS mfsmaster.
 
 Steps to install:
@@ -85,3 +85,5 @@ IRC: Join #cherrypop on freenode.
 
 # Author
 Gustav Fransson Nyvell
+
+*Instructions are for amd64 unless otherwise noted.
