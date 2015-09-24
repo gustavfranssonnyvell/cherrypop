@@ -1,3 +1,0 @@
-if [ -x /etc/init.d/cherrypop ]; then
-/etc/init.d/cherrypop stop
-fi
