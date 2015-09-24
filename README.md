@@ -29,7 +29,7 @@ iface br-eth0 inet dhcp
 - Install deb with dpkg -i cherrypop*deb.
 - If it didn't install you need to install the dependencies.
 sudo apt-get upgrade -f
-- Done. Start deploying machines to libvirt and they will distribute to other nodes later when you have more. Remember it's wisest to only deploy ready made harddrive images since nodes might start reorganizing without warning.
+- Done. Start deploying machines to libvirt and they will distribute to other nodes later when you have more. Remember it's wisest to only deploy ready made harddrive images since nodes might start reorganizing without warning. I use virt-manager to manage the system and do deployments.
 
 # Setting up a Cherrypop node
 Nice to have: a DNS server and a DHCP server where you can lock in IP addresses for new virtual machines and nodes, also good for LizardFS mfsmaster.
