@@ -3,7 +3,7 @@
 			found by discoveryd.
    Copyright (C) 2015 Gustav Fransson Nyvell
 
-   This file is part of cherrypop.
+   This file is a part of cherrypop.
 
    Foobar is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
