@@ -10,12 +10,13 @@ fi
 
 if [ "$1" = "start" ]; then
 	echo starting cherrypop
-	sudo -u cherrypop /usr/sbin/discoveryd $MYIP $BROADCAST:2500 >/dev/null 2>/dev/null && sudo -u cherrypop /usr/sbin/vmrunnerd $MYIP >/dev/null 2>/dev/null && sudo -u cherrypop /usr/sbin/runner.sh $MYIP >/dev/null 2>/dev/null
+	sudo -u cherrypop /usr/sbin/discoveryd $MYIP $BROADCAST:2500 >/dev/null 2>/dev/null && sudo -u cherrypop /usr/sbin/vmrunnerd $MYIP >/dev/null 2>/dev/null && sudo -u cherrypop /usr/sbin/cherrypop-replicated >/dev/null 2>/dev/null && sudo -u cherrypop /usr/sbin/runner.sh $MYIP >/dev/null 2>/dev/null &
 fi
 if [ "$1" = "stop" ]; then
 	echo stopping cherrypop
 	killall discoveryd
 	killall vmrunnerd
+	killall cherrypop-replicated
 	killall -w runner.sh
 fi
 if [ "$1" = "restart" ]; then

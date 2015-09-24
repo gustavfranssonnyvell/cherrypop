@@ -16,6 +16,6 @@
 #
 #   You should have received a copy of the GNU General Public License
 #   along with cherrypop.  If not, see <http://www.gnu.org/licenses/>.
-gcc distributevms.c `pkg-config libvirt --libs` -o distributevms
+gcc cherrypop-replicated.c `pkg-config libvirt --libs` -o cherrypop-replicated
 gcc discoveryd.c mkaddr.c -o discoveryd
 gcc vmrunnerd.c -lcrypt `pkg-config libvirt --libs` -o vmrunnerd
