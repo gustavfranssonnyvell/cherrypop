@@ -1,4 +1,4 @@
-VER=cherrypop_0.1beta-1
+VER=cherrypop_0.2beta-1
 compileok() {
 	DEST=$VER
 	for BIN in discoveryd distributevms vmrunnerd runner.sh; do
