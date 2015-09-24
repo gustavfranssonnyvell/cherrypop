@@ -6,7 +6,7 @@ and autodivide up the workload. Also there is no minimum limit for hosts, well, 
 setting up low-end servers in a cloud or a cloud where you want the most bang for the bucks.
 
 # Requirements
-At least/only amd64 for now.
+At least/only amd64 with VT-x for now. However you can run without VT-x it's not realistic to do so.
 
 # Usage
 This section be filled in more later. To deploy a vm, have a disk image ready and create a machine on one of the nodes from it. When you press OK/done in virt-manager for instance, it will be distributed immediately. It is not recommended to install new VMs on the cloud as if the cloud changes then the VM might be moved and the installation broken. So have an image ready beforehand. Any VM with the prefix ignoreXXX (XXX=name) will not be managed by Cherrypop other than copied to other nodes.
