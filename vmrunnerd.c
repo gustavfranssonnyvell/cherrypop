@@ -82,9 +82,7 @@ char **gethosts() {
 
 struct hostwithvmhash {
 	char *host;
-	char *host_hash;
 	char *vm;
-	char *vm_hash;
 	char *combined;
 	size_t prio;
 };
@@ -126,21 +124,19 @@ struct hostwithvmhash **cleanlist(struct hostwithvmhash **list) {
 		list++;
 	}
 
+	free(seenvms);
+
 	return newlist;
 	
 }
 
-void main(int argc, char *argv[]) {
-	char *myIP;
-	if (argc<2)
-		printf("arg1=myip\n"),exit(-128);
-	myIP = argv[1];
+struct killitem {
+	char *uuid;
+	size_t kill_initated_at;
+};
+void run(char *myIP, virConnectPtr localhost) {
 
-	run(myIP);
-}
-
-void run(char *myIP) {
-	virConnectPtr localhost = virConnectOpen("qemu:///system");
+	printf("*** New run\n");
 	virDomainPtr *domains, *domainsptr;
 	virConnectListAllDomains(localhost, &domains, VIR_CONNECT_LIST_DOMAINS_ACTIVE|VIR_CONNECT_LIST_DOMAINS_INACTIVE|VIR_CONNECT_LIST_DOMAINS_RUNNING|VIR_CONNECT_LIST_DOMAINS_SHUTOFF);
 	domainsptr = domains;
@@ -151,7 +147,7 @@ void run(char *myIP) {
 	while(*domainsptr != NULL) {
 		char buf[VIR_UUID_STRING_BUFLEN];
 		virDomainGetUUIDString(*domainsptr, buf);
-		char *name = virDomainGetName(*domainsptr);
+		const char *name = virDomainGetName(*domainsptr);
 		if (!strncmp("ignore",name,strlen("ignore"))) {
 			domainsptr++;
 			continue;
@@ -166,8 +162,6 @@ void run(char *myIP) {
 	while(*domainuuidsptr != NULL) domainuuidsptr++, domainuuids_count++;
 	domainuuidsptr = domainuuids;
 	domainsptr = domains;
-	int **distance = malloc(sizeof(int)*1024*1024);
-	*distance = NULL;
 	char **hosts = gethosts();
 	char **hostsptr=hosts;
 	size_t hosts_count = 0;
@@ -182,14 +176,14 @@ void run(char *myIP) {
 		sign = !sign;
 		size_t k=1;
 		while(*domainuuidsptr != NULL) {
-			char *num = "$6$hest";
+/*			char *num = "$6$hest";
 			char *hash = crypt(*domainuuidsptr, num);
-			char *hash2 = crypt(*hostsptr, num);
+			char *hash2 = crypt(*hostsptr, num);*/
 			struct hostwithvmhash *c=malloc(sizeof(struct hostwithvmhash));
 			c->host = *hostsptr;
-			c->host_hash = strdup(hash+10);
+//			c->host_hash = strdup(hash+10);
 			c->vm = *domainuuidsptr;
-			c->vm_hash = strdup(hash2+10);
+//			c->vm_hash = strdup(hash2+10);
 			c->combined = malloc(10000);
 			strcpy(c->combined, "");
 			strcat(c->combined, c->host);
@@ -219,7 +213,7 @@ void run(char *myIP) {
 	while(*csptr != NULL) count++, csptr++;
 	csptr = cs;
 
-	qsort(csptr, count, sizeof(struct hostwithvmhash*), cscompare);
+	qsort(csptr, count, sizeof(struct hostwithvmhash*), (__compar_fn_t)cscompare);
 
 	struct hostwithvmhash **csptrptr = csptr;
 	size_t i=0,k=0,j=0,q=1,m=0;
@@ -248,23 +242,63 @@ void run(char *myIP) {
 			(*csptrptr)->prio = k;
 		csptrptr++;
 	}
-	qsort(csptr, count, sizeof(struct hostwithvmhash*), cscompareprio);
+	qsort(csptr, count, sizeof(struct hostwithvmhash*), (__compar_fn_t)cscompareprio);
 
 	struct hostwithvmhash **cleaned = cleanlist(csptr);
+	struct hostwithvmhash **cleanedstart = cleaned;
 
 	while(*cleaned != NULL) {
 		virDomainPtr d = virDomainLookupByUUIDString(localhost, (*cleaned)->vm);
-		char *name = virDomainGetName(d);
+		const char *name = virDomainGetName(d);
+		int state, reason;
+		virDomainGetState(d, &state, &reason, 0);
 		if (!strcmp((*cleaned)->host, myIP)) {
 			printf("I should be running %s (%s)\n", name, (*cleaned)->vm);
-			virDomainCreate(d);
+			if (state == VIR_DOMAIN_RUNNING)
+				printf("...and it's running.\n");
+			else
+				virDomainCreate(d);
 		} else {
 			printf("I should NOT be running %s (%s)\n", name, (*cleaned)->vm);
-			virDomainDestroy(d);
+			if (state == VIR_DOMAIN_RUNNING) {
+				printf("Destroying.\n");
+				virDomainDestroy(d);
+			} else
+				printf("...and it's not running.\n");
+		}
+		if (d) {
+			virDomainFree(d);
 		}
 		//printf("prio:%d host:%s, vm:%s combined:%s\n", (*cleaned)->prio, (*cleaned)->host, (*cleaned)->vm, (*cleaned)->combined);
 		cleaned++;
 	}
+	domainuuidsptr = domainuuids;
+	while(*domainuuidsptr != NULL) {
+		free(*domainuuidsptr);
+		domainuuidsptr++;
+	}
+	free(domainuuids);
+	free(cleanedstart);
+	csptr = cs;
+	while(*csptr != NULL) {
+		free((*csptr)->combined);
+		free(*csptr);
+		csptr++;
+	}
+	free(cs);
+	free(seen);
+	hostsptr = hosts;
+	while(*hostsptr != NULL) {
+		free(*hostsptr);
+		hostsptr++;
+	}
+	free(hosts);
+	domainsptr = domains;
+	while(*domainsptr != NULL) {
+		virDomainFree(*domainsptr);
+		domainsptr++;
+	}
+	free(domains);
 /*
 	virDomainPtr *domains;
 	virConnectListAllDomains(src, &domains, VIR_CONNECT_LIST_DOMAINS_ACTIVE);
@@ -291,3 +325,35 @@ void run(char *myIP) {
 		domains++;
 	}*/
 }
+
+void main(int argc, char *argv[]) {
+	char *myIP;
+	if (argc<2)
+		printf("arg1=myip\n"),exit(-128);
+	myIP = argv[1];
+
+	if (fork() == 0) {
+		// Child
+		virConnectPtr localhost = virConnectOpen("qemu:///system");
+		while(1) {
+			int alive = virConnectIsAlive(localhost);
+			if (alive == 0) {
+				printf("Connection lost, reopening.\n");
+				virConnectClose(localhost);
+				localhost = virConnectOpen("qemu:///system");
+			} else if (alive == -1) {
+				printf("Connection dead.\n");
+				virConnectClose(localhost);
+				localhost = virConnectOpen("qemu:///system");
+				sleep(3);
+				continue;
+			}
+			printf("*** connected\n");
+			run(myIP, localhost);
+			sleep(1);
+		}
+		virConnectClose(localhost);
+	}
+	exit(0);
+}
+

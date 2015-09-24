@@ -13,7 +13,6 @@ a() {
 		done
 		}
 		b &
-		/usr/sbin/vmrunnerd $ME >/dev/null 2>/dev/null
 		/usr/sbin/distributevms $ME >/dev/null 2>/dev/null
 		sleep 1
 	done

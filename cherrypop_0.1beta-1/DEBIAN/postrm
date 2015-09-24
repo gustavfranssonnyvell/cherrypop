@@ -4,3 +4,4 @@ if [ -x "$(command -v deluser)" ]; then
 else
 	echo >&2 "not removing $USERNAME system account because deluser command was not found"
 fi
+rm -f /etc/rc2.d/S99cherrypop
