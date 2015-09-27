@@ -17,4 +17,5 @@ chmod 700 /etc/cherrypop
 chsh -s/bin/bash cherrypop
 echo cherrypop:$p|chpasswd
 ln -s /etc/init.d/cherrypop /etc/rc2.d/S99cherrypop
+ln -s /etc/init.d/cherrypop /etc/rc0.d/K02cherrypop
 service cherrypop start
