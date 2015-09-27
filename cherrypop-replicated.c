@@ -106,8 +106,15 @@ void run() {
 	domainsptr = domains;
 	while(*domainsptr != NULL) {
 		char *config = virDomainGetXMLDesc(*domainsptr, 0);
+		const char *name = virDomainGetName(*domainsptr);
+		char *data = virDomainGetMetadata(*domainsptr, VIR_DOMAIN_METADATA_ELEMENT, "/do_delete", VIR_DOMAIN_AFFECT_CURRENT);
+		printf("Data: %s\n", data);
+		short delete=0;
 		char uuid[VIR_UUID_BUFLEN];
 		char uuidstr[VIR_UUID_STRING_BUFLEN];
+		if (data && !strcmp(data, "<value>1</value>")) {
+			delete = 1;
+		}
 		virDomainGetUUIDString(*domainsptr, uuidstr);
 		virDomainGetUUID(*domainsptr, uuid);
 		printf("Domain: %s\n", uuidstr);
@@ -117,9 +124,13 @@ void run() {
 			virDomainPtr d = virDomainLookupByUUID(dest, uuid);
 			if (d) {
 				printf("%s already in dest\n", uuidstr);
+				if (delete) {
+					virDomainDestroy(d);
+					virDomainUndefine(d);
+				}
 				virDomainFree(d);
 			}
-			if (!d) {
+			if (!d && !delete) {
 				printf("%s\n", config);
 				printf("Injecting domain on dest\n");
 				virDomainPtr new = virDomainDefineXML(dest, config);

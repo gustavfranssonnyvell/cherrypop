@@ -19,3 +19,4 @@
 gcc cherrypop-replicated.c `pkg-config libvirt --libs` -o cherrypop-replicated
 gcc discoveryd.c mkaddr.c -o discoveryd
 gcc vmrunnerd.c -lcrypt `pkg-config libvirt --libs` -o vmrunnerd
+gcc deletedom.c -lcrypt `pkg-config libvirt --libs` -o deletedom
