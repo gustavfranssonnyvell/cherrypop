@@ -89,5 +89,5 @@ Create /var/lib/discoveryd and chown it to the owner of the discoveryd process. 
 IRC: Join #cherrypop on freenode.
 
 # Author
-Gustav Fransson Nyvell
+Gustav Fransson Nyvell (do not use.)
 
