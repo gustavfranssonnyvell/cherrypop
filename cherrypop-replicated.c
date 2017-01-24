@@ -160,13 +160,13 @@ void run() {
 	virConnectClose(src);
 }
 
-void main() {
+int main() {
 	if (fork() == 0) {
 		while(1) {
 			run();
 			sleep(1);
 		}
-		exit(0);
+		return 0;
 	}
-	exit(0);
+	return 0;
 }

@@ -78,9 +78,11 @@ char **gethosts() {
 	return hosts;
 }
 
-void main(int argc, char *argv[]) {
-	if(argc <= 1)
-		printf("usage: deletedom domname\n"),exit(-1);
+int main(int argc, char *argv[]) {
+	if(argc <= 1) {
+		printf("usage: deletedom domname\n");
+		return -1;
+	}
 
 	char **hosts = gethosts();
 	char **hostsptr = hosts;
