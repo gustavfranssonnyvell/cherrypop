@@ -23,6 +23,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <libvirt/libvirt.h>
+#include <unistd.h>
 
 char **gethosts() {
 	char **hosts = (char**)malloc(sizeof(char*)*1024);
