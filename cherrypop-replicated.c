@@ -23,6 +23,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <libvirt/libvirt.h>
+#include <unistd.h>
 
 char **gethosts() {
 	char **hosts = (char**)malloc(sizeof(char*)*1024);
@@ -159,13 +160,13 @@ void run() {
 	virConnectClose(src);
 }
 
-void main() {
+int main() {
 	if (fork() == 0) {
 		while(1) {
 			run();
 			sleep(1);
 		}
-		exit(0);
+		return 0;
 	}
-	exit(0);
+	return 0;
 }

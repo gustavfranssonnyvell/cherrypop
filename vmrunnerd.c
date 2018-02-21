@@ -24,6 +24,7 @@
 #include <stdlib.h>
 #include <libvirt/libvirt.h>
 #include <crypt.h>
+#include <unistd.h>
 
 char **gethosts() {
 	char **hosts = (char**)malloc(sizeof(char*)*1024);
@@ -326,10 +327,12 @@ void run(char *myIP, virConnectPtr localhost) {
 	}*/
 }
 
-void main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 	char *myIP;
-	if (argc<2)
-		printf("arg1=myip\n"),exit(-128);
+	if (argc<2) {
+		printf("arg1=myip\n");
+		return -128;
+	}
 	myIP = argv[1];
 
 	if (fork() == 0) {
@@ -354,6 +357,6 @@ void main(int argc, char *argv[]) {
 		}
 		virConnectClose(localhost);
 	}
-	exit(0);
+	return 0;
 }
 
